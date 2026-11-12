@@ -1,1 +1,5 @@
 raylib-lua-sol
+.luarc.json
+.luaurc
+.vscode
+lovr
