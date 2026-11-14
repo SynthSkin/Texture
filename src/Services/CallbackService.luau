@@ -2,7 +2,7 @@ local Service = {}
 
 Service.Callbacks = {}
 
-for str in ipairs(Callbacks) do
+for name: any, str: string in pairs(Enum.Callback) do
     Service.Callbacks[str] = {
         _LovrCallback = str,
         Functions = {},
