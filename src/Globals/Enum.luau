@@ -10,5 +10,7 @@ return {
         ErrorHandler = "errhand",
         FileChanged = "filechanged",
         Focus = "focus",
+        KeyPressed = "keypressed",
+        KeyReleased = "keyreleased"
     }
 }

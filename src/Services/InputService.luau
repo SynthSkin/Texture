@@ -32,8 +32,8 @@ function Listener.new(k: string, contexts: {Required: { string }, Disallowed: { 
     local self = {}
 
     self._key = k
+    self._active = false
     self.Contexts = contexts
-
     self.PressedSignal = Signal.new()
     self.ReleasedSignal = Signal.new()
 
@@ -58,21 +58,48 @@ function Service.DisableContext(context: string)
     end
 end
 
-function Service.TriggerInputEvents(k, InputType: string)
+local function checkInputContext(Context)
+    if not Context then return true end
+    if not Context.Disallowed or not Context.Required then
+        print("malformed input listener context")
+        return false
+    end
+
+    if not BetterTable.doContentsExistIn(Context.Required, Service.Contexts) then return false end
+    for i, context in Context.Disallowed do
+        if table.find(Service.Contexts, context) then
+            return false
+        end
+    end
+    return true
+end
+
+-- Private used to fire signals
+function Service._TriggerKeyboardInputEvents(k, InputType: string)
     for i, inputListener in Service.Inputs do
-        if inputListener._key == k and BetterTable.doContentsExistIn(Service.Contexts, inputListener.Contexts.Required) then
-
-            for i, context in inputListener.Contexts.Disallowed do if table.find(Service.Contexts, context) then return end end
-
+        if inputListener._key == k and checkInputContext(inputListener.Contexts) then
             if InputType == Enum.InputType.Start then
                 inputListener.PressedSignal:Fire()
+                inputListener._active = true
             elseif InputType == Enum.InputType.End then
                 inputListener.ReleasedSignal:Fire()
+                inputListener._active = false
             else
                 print(`unknown input type: {InputType}`)
             end
+        elseif inputListener._key == k and inputListener._active then
+            inputListener.ReleasedSignal:Fire()
+            inputListener._active = false
         end
     end
 end
+
+CallbackService.PushFunction(Enum.Callback.KeyPressed, "InputBegan", function(k)
+    Service._TriggerKeyboardInputEvents(k, Enum.InputType.Start)
+end)
+
+CallbackService.PushFunction(Enum.Callback.KeyReleased, "InputEnded", function(k)
+    Service._TriggerKeyboardInputEvents(k, Enum.InputType.End)
+end)
 
 return Service
