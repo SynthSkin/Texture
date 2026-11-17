@@ -6,8 +6,8 @@ local BetterTable = require("Library.Table")
 
     - Provide a key string (k)
     - Optionally provide contexts: 
-        Contexts = {
-            Required = {            -- ALL required contexts must be active in order for the input signal to fire.
+        Contexts = {                -- If a table is passed it must have both sub tables even if they are empty
+            Required = {            -- ALL required contexts must be active in order for the input signal to fire..
                 "requiredContext1",
                 "requiredContext2",
             },
@@ -28,7 +28,7 @@ Service.Contexts = {}
 local Listener = {}
 Listener.__index = Listener
 
-function Listener.new(k: string, contexts: {Required: { string }, Disallowed: { string }})
+function Listener.new(k: string, contexts: {Required: { string }, Disallowed: { string }}?)
     local self = {}
 
     self._key = k
@@ -40,7 +40,7 @@ function Listener.new(k: string, contexts: {Required: { string }, Disallowed: { 
     return setmetatable(self, Listener)
 end
 
-function Service.NewInputListener(k: string, contexts: {Required: { string }, Disallowed: { string }})
+function Service.NewInputListener(k: string, contexts: {Required: { string }, Disallowed: { string }}?)
     local NewListener = Listener.new(k, contexts)
     table.insert(Service.Inputs, NewListener)
     return NewListener
@@ -84,10 +84,9 @@ function Service._TriggerKeyboardInputEvents(k, InputType: string)
             elseif InputType == Enum.InputType.End then
                 inputListener.ReleasedSignal:Fire()
                 inputListener._active = false
-            else
-                print(`unknown input type: {InputType}`)
             end
         elseif inputListener._key == k and inputListener._active then
+            if InputType ~= Enum.InputType.End then print("How did you press a key without letting go of it?") end
             inputListener.ReleasedSignal:Fire()
             inputListener._active = false
         end
