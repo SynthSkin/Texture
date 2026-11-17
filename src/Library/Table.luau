@@ -31,4 +31,13 @@ function extraTable.find(tbl: { [any]: any }, value: any): any
     return false
 end
 
+function extraTable.doContentsExistIn(tablea: { [any]: any }, tableb: { [any]: any }) --Returns true if all contents of table a are within table b
+    for k, value in pairs(tablea) do
+        if not extraTable.find(tableb, value) then
+            return false
+        end
+    end
+    return true
+end
+
 return extraTable
