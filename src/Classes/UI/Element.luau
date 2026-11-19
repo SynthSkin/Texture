@@ -1,3 +1,0 @@
-local Element = {}
-
-return Element
