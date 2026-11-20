@@ -3,20 +3,35 @@ local Types = require("Globals.Types")
 local Element = {}
 Element.__index = Element
 
-function Element.new(Components: Types.UIElementCreationType): Types.UIElement
+function Element.new(Components: Types.UIElementCreationType?): Types.UIElement
+    local props = Components or ({} :: Types.UIElementCreationType)
     local self = setmetatable({
         Parent = nil,
         Children = {},
-        ZIndex = Components.ZIndex or 1,
-        Visible = if Components.Visible ~= nil then Components.Visible else true,
-        Clips = Components.Clips or false,
-        Layout = Components.Layout,
-        Background = Components.Background,
-        Clickable = Components.Clickable,
-        CustomDraw = Components.CustomDraw,
+        ZIndex = props.ZIndex or 1,
+        Visible = if props.Visible ~= nil then props.Visible else true,
+        Clips = props.Clips or false,
+        Layout = props.Layout,
+        Background = props.Background,
+        Text = props.Text,
+        Clickable = props.Clickable,
+        Scroll = props.Scroll,
+        CustomDraw = props.CustomDraw,
     }, Element)
 
-    return(self :: any) :: Types.UIElement
+    local element = (self :: any) :: Types.UIElement
+
+    if props.Children then
+        for _, child in props.Children do
+            element:AddChild(child)
+        end
+    end
+
+    for _, child in ipairs(props :: any) do
+        element:AddChild(child)
+    end
+
+    return element
 end
 
 function Element:AddChild(child: Types.UIElement): Types.UIElement
@@ -25,4 +40,8 @@ function Element:AddChild(child: Types.UIElement): Types.UIElement
     return child
 end
 
-return Element
+return setmetatable(Element, {
+    __call = function(_, props: Types.UIElementCreationType?): Types.UIElement
+        return Element.new(props)
+    end,
+})

@@ -11,7 +11,7 @@ for name: any, str: string in pairs(Enum.Callback) do
     }
 end
 
-function Service.PushFunction(callback: string, id: string, func: () -> nil)
+function Service.PushFunction(callback: string, id: string, func: (...any) -> ())
     if not Service.Callbacks[callback] then error("callback not found: " .. callback) end
 
     local CallbackObject = Service.Callbacks[callback]

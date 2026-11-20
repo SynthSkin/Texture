@@ -11,6 +11,22 @@ return {
         FileChanged = "filechanged",
         Focus = "focus",
         KeyPressed = "keypressed",
-        KeyReleased = "keyreleased"
+        KeyReleased = "keyreleased",
+        MousePressed = "mousepressed",
+        MouseReleased = "mousereleased",
+        MouseMoved = "mousemoved",
+        WheelMoved = "wheelmoved",
+    },
+    TextAlignment = {
+        Horizontal = {
+            Center = "center",
+            Left = "left",
+            Right = "right",
+        },
+        Vertical = {
+            Center = "middle",
+            Top = "top",
+            Bottom = "bottom"
+        }
     }
 }

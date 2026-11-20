@@ -5,11 +5,6 @@ CallbackService = require("Services.CallbackService")
 InputService = require("Services.InputService")
 UIService = require("Services.UIService")
 
-local Frame = require("Classes.UI.Frame")
-local Types = require("Globals.Types")
-
-UIService.Root:AddChild(Frame.new({
-    Background = {Color = {R=1,G=1,B=1,A=1}}
-}))
+local _App = require("App")
 
 CallbackService.PushFunction(Enum.Callback.Load, "MainLoad", function() end)

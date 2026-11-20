@@ -5,17 +5,32 @@ local Element = require("Classes.UI.Base.Element")
 
 local Frame = {}
 Frame.__index = Frame
-setmetatable(Frame, Element)
 
-function Frame.new(Props: Types.FrameCreationType?)
-    local props = Props or {}
+function Frame.new(Props: Types.FrameCreationType): Types.UIElement
+    local props = Props or ({} :: Types.FrameCreationType)
 
-    props.Layout = props.Layout or Components.Layout()
-    props.Background = props.Background or Components.Background()
+    local elementProps: Types.UIElementCreationType = {
+        ZIndex = props.ZIndex,
+        Visible = props.Visible,
+        Clips = props.Clips,
+        CustomDraw = props.CustomDraw,
+        Children = props.Children,
+        Layout = Components.ResolveLayout(props),
+        Background = Components.ResolveBackground(props),
+    }
 
-    local self = Element.new(props :: Types.UIElementCreationType)
+    for i, child in ipairs(props :: any) do
+        (elementProps :: any)[i] = child
+    end
 
-    return setmetatable(self, Frame)
+    local self = Element.new(elementProps)
+
+    return (setmetatable(self, Frame) :: any) :: Types.UIElement
 end
 
-return Frame
+return (setmetatable(Frame, {
+    __index = Element,
+    __call = function(_, Props: Types.FrameCreationType): Types.UIElement
+        return Frame.new(Props)
+    end,
+}) :: any) :: (Props: Types.FrameCreationType) -> Types.UIElement
